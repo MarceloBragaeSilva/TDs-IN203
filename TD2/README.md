@@ -4,8 +4,6 @@
 
 
 
-
-
 ## Mandelbrot 
 
 *Expliquer votre stratégie pour faire une partition équitable des lignes de l'image entre chaque processus*
@@ -14,15 +12,15 @@ La stratégie adopté c'était de faire H/nbp itérations de la fonction 'comput
 processus, en utilisant la fonction 'MPI_Gather' où le processus 0 est le root et agregue les calcules
 locaux de chaque processus dans le vector 'pixels' et après sauvegarde l'image'.
 
-           | Taille image : 800 x 600 | 
------------+---------------------------
-séquentiel |            98.7747  
-avec -O3   |            14.4217
-1          |            98.0604  
-2          |            54.0118  
-3          |            44.2169  
-4          |            39.7886  
-8          |            45.8549  
+|   | Taille image : 800 x 600 |
+| ------------- | ------------- |
+| séquentiel  | 98.7747  |
+| avec -O3   | 14.4217  |
+| 1  | 98.0604  |
+| 2  | 54.0118 |
+| 3  | 44.2169   |
+| 4  | 39.7886    |
+| 8  | 45.8549   | 
 
 
 *Discuter sur ce qu'on observe, la logique qui s'y cache.*
@@ -41,14 +39,15 @@ La stratégie adopté c'était la proposée (Maitre-Esclave) où le maitre envoi
 esclave calcule une ligne, l'envoi au maitre, et reçois une nouvelle ligne à calculer. Cependant, je n'ai pas trouvé
 à temps une façon de bien organiser l'image assemblé, alors, des fois le code ne mets pas l'image dans l'ordre correcte.
 
-           | Taille image : 800 x 600 | 
------------+---------------------------
-séquentiel |           98.7747   
-1          |  pas possible, il faut au minimum 1 maitre et un esclave            
-2          |          119.523    
-3          |           62.7844   
-4          |           44.4714   
-8          |           23.8546   
+
+|   | Taille image : 800 x 600 |
+| ------------- | ------------- |
+| séquentiel  | 98.7747  |
+| 1  | pas possible, il faut au minimum 1 maitre et un esclave  |
+| 2  |  119.523 |
+| 3  |  62.7844     |
+| 4  | 44.4714     |
+| 8  |  23.8546   | 
 
 *Discuter sur ce qu'on observe, la logique qui s'y cache.*
 Contrairement au code de partition équitable, cette code devient plus rapide même avec 8 processus et avec 2 processus
