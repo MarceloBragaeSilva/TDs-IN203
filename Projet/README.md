@@ -46,3 +46,11 @@ Dans cette partie, l'utilisation de OpenMP a été faite pour paralléliser les 
 Alors par exemple, dans la boucle d'actualisation de la population (ligne 202) l'appel à personne.estContamine(grippe) représente un appel à grippe.nombreJoursIncubation()/grippe.nombreJoursSymptomatomatiques() et ces nombres sont définis en appelant une distribution gamma sur l'engine m_moteur_stochastique. Cette engine gère une séquence pseudo-aleátoire et donc, est une suite de valeurs définis lorsqu'on connaît l'ordre des graines utilisées. 
 
 Cependant, quand on parallèle avec OpenMP, nous ne savons pas quel ordre des graines sera utilisé car chaque thread exécute dans une ordre différent et donc, le résultat de la simulation sera toujours un peu biaisé. La solution utilisée a été utilisé le directive "ordered" de OpenMP pour garantir l'exécution séquentielle de chaque individu, cependant, l'accélération obtenue n'est pas significative.
+
+ N proc pour sim | Temps sans ordered | Temps avec ordered 
+-----------------|--------------|------------
+1                 |        1      |98.0604  
+2                 |         2     |54.0118  
+3                 |        3      |44.2169  
+
+
