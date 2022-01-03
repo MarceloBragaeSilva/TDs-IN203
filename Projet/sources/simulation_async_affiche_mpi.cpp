@@ -218,6 +218,7 @@ void simulation(bool affiche, int rank) {
                         vec_statistiques[3 * i + 2] = grille.getStatistiques().at(i).nombre_contaminant_grippe_et_contamine_par_agent;
                     }
                     MPI_Send(vec_statistiques.data(), vec_statistiques.size(), MPI_INT, 0, jours_ecoules, MPI_COMM_WORLD);
+                    if (jours_ecoules == DAYS_OF_SIM) flag = 1;
                     teste++;
                 }
             }
@@ -228,8 +229,8 @@ void simulation(bool affiche, int rank) {
 
             if (jours_ecoules >= DAYS_OF_SIM) {
                 quitting = true;                          //FOR A YEAR
-                //necessary cause proc0 gets stuck at MPI_Recv, so, we force to send the last days of simulation
-                if (affiche) MPI_Send(vec_statistiques.data(), vec_statistiques.size(), MPI_INT, 0, jours_ecoules, MPI_COMM_WORLD);
+                //necessary cause proc0 gets stuck at MPI_Recv, so, we force to send the last days of simulation if it not yet (reusing 'flag')
+                if (affiche && !flag) MPI_Send(vec_statistiques.data(), vec_statistiques.size(), MPI_INT, 0, jours_ecoules, MPI_COMM_WORLD);
             }
             jours_ecoules += 1;
         }// Fin boucle temporelle
