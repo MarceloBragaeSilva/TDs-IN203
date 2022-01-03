@@ -1,16 +1,19 @@
 
 # Bilan Projet
 
+BRAGA E SILVA, Marcelo
+Le 03 janvier 2022
+
 ## Informations
 
-Ce projet fait partie du cours IN203 - Programmation Parallèle de l'école ENSTA Paris, avec le but de paralléliser avec MPI et OpenMP une simulation stochastique de la co–circulation d’un virus (de la grippe par exemple) et d’un second agent pathogène, en interaction dans une population humaine virtuelle.Il a été développé dans un environnement WSL (Windows Subsystem for Linux) en utilisant le MobaXterm comme fenêtre graphique.  L'ordinateur utilisé a 4 cœurs de calcule et donc, le maximum de processus utilisés est 4. Les fichiers .cpp pour chaque partie du projet ont été nommés conformément aux consignes du [Descriptif](https://github.com/MarceloBragaeSilva/TDs-IN203/blob/main/Projet/Sujet.pdf) fourni par le prof M. Juvigny. 
+Ce projet fait partie du cours IN203 - Programmation Parallèle de l'école ENSTA Paris, avec le but de paralléliser avec MPI et OpenMP une simulation stochastique de la co–circulation d’un virus (de la grippe par exemple) et d’un second agent pathogène, en interaction dans une population humaine virtuelle. La parallélisation a été développé dans un environnement WSL (Windows Subsystem for Linux) en utilisant le MobaXterm comme fenêtre graphique.  L'ordinateur utilisé a 4 cœurs de calcule et donc, le maximum de processus utilisés est 4. Les fichiers .cpp pour chaque partie du projet ont été nommés conformément aux consignes du [Descriptif](https://github.com/MarceloBragaeSilva/TDs-IN203/blob/main/Projet/Sujet.pdf) fourni par le prof M. Juvigny. 
 
 Un exécutable .exe de même nom sera créé pour chacun en utilisant la commande "make all".
 
 ## 2.1 Mesure du temps:
 Premièrement, toutes les simulations faites dans le projet ont été configurées avec une durée de 365 jours pour que le résultat et la quantité de travail de chaque code soient les mêmes. Les temps mentionnés sont la moyenne de 5 itérations pour chaque simulation.
 
-Donc, pour le code base et pour une simulation d'une année, on a les temps:       
+Donc, pour le [code base fourni](https://github.com/MarceloBragaeSilva/TDs-IN203/blob/main/Projet/sources/simulation.cpp) et pour une simulation d'une année, on a les temps:       
 
 - Temps avec l'affichage : 32.65 secondes, commande "./simulation.exe"
 
