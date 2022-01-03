@@ -26,13 +26,13 @@ void majStatistique(epidemie::Grille& grille, std::vector<epidemie::Individu> co
     auto [largeur, hauteur] = grille.dimension();
     auto& statistiques = grille.getStatistiques();
 
-//#pragma omp parallel for ordered
+#pragma omp parallel for ordered
     for (auto const& personne : individus)
     {
         auto pos = personne.position();
 
         std::size_t index = pos.x + pos.y * largeur;
-//#pragma omp ordered
+#pragma omp ordered
         if (personne.aGrippeContagieuse())
         {
             if (personne.aAgentPathogeneContagieux())
@@ -202,12 +202,12 @@ void simulation(bool affiche, int rank) {
             for (auto& personne : population) {
                 if (personne.testContaminationGrippe(grille, contexte.interactions, grippe, agent)) {
                     compteur_grippe++;
-//#pragma omp ordered
+#pragma omp ordered
                     personne.estContamine(grippe);
                 }
                 if (personne.testContaminationAgent(grille, agent)){
                     compteur_agent++;
-//#pragma omp ordered
+#pragma omp ordered
                     personne.estContamine(agent);
                 }
                 // On verifie si il n'y a pas de personne qui veillissent de veillesse et on genere une nouvelle personne si c'est le cas.

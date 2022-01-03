@@ -229,7 +229,7 @@ void simulation(bool affiche, int rank, int nbp) {
             MPI_Allreduce(MPI_IN_PLACE, vec_statistiques.data(), vec_statistiques.size(), MPI_INT, MPI_SUM, sub_comm);
             grille.setStatistiques(vec_statistiques);
 
-            // On parcout la population pour voir qui est contamine et qui ne l'est pas, d'abord pour la grippe puis pour l'agent pathogene
+            // On parcout la sub_population pour voir qui est contamine et qui ne l'est pas, d'abord pour la grippe puis pour l'agent pathogene
             std::size_t compteur_grippe = 0, compteur_agent = 0, mouru = 0;
             for (auto& personne : population) {
                 if (personne.testContaminationGrippe(grille, contexte.interactions, grippe, agent)) {
