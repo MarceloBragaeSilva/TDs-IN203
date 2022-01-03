@@ -6,7 +6,7 @@ Le 03 janvier 2022
 
 ## Informations
 
-Ce projet fait partie du cours IN203 - Programmation Parallèle de l'école ENSTA Paris, avec le but de paralléliser avec MPI et OpenMP une simulation stochastique de la co–circulation d’un virus (de la grippe par exemple) et d’un second agent pathogène, en interaction dans une population humaine virtuelle. La parallélisation a été développé dans un environnement WSL (Windows Subsystem for Linux) en utilisant le MobaXterm comme fenêtre graphique.  L'ordinateur utilisé a 4 cœurs de calcule et donc, le maximum de processus utilisés est 4. Les fichiers .cpp pour chaque partie du projet ont été nommés conformément aux consignes du [Descriptif](https://github.com/MarceloBragaeSilva/TDs-IN203/blob/main/Projet/Sujet.pdf) fourni par le prof M. Juvigny. 
+Ce projet fait partie du cours IN203 - Programmation Parallèle de l'école ENSTA Paris, avec le but de paralléliser avec MPI et OpenMP une simulation stochastique de la co–circulation d’un virus (de la grippe par exemple) et d’un second agent pathogène, en interaction dans une population humaine virtuelle. La parallélisation a été développée dans un environnement WSL (Windows Subsystem for Linux) en utilisant le MobaXterm comme fenêtre graphique.  L'ordinateur utilisé a 4 cœurs de calcule et donc, le maximum de processus utilisés est 4. Les fichiers .cpp pour chaque partie du projet ont été nommés conformément aux consignes du [Descriptif](https://github.com/MarceloBragaeSilva/TDs-IN203/blob/main/Projet/Sujet.pdf) fourni par le prof M. Juvigny. 
 
 Un exécutable .exe de même nom sera créé pour chacun en utilisant la commande "make all".
 
@@ -84,14 +84,15 @@ Nous regardons un effet contraire aux simulation avec et sans 'ordered' quant le
 3                |        3.26        |8.02                |       10.01      |4.07
 4                |        2.75        |8.28                |       11.87      |3.94
 
-Désormais on peut voir que les temps sans affichage finalement ont réduit, car il y a plus d'un coeur pour calculer la simulation.
+Désormais on peut voir que les temps sans affichage finalement ont réduit, car il y a plus d'un cœur pour calculer la simulation.
 
 ## 2.5 Parallélisation MPI de la simulation - [.cpp](https://github.com/MarceloBragaeSilva/TDs-IN203/blob/main/Projet/sources/simulation_async_mpi.cpp)
-Dans cette partie, les threads s'occupant de la simulation ont sont propre MPI_Comm pour échanger des donnés, le 'sub_comm'. À vue du processus 0 (affichage), rien est changé. Pour la simulation, la stratégie adopté a été couper le nombre total de individus dans 'contexte.taux_population' et chaque thread aura son 'sub_taux_population' et fera les calcules de ces individus.
+Dans cette partie, les threads s'occupant de la simulation ont sont propre MPI_Comm pour échanger des donnés, le 'sub_comm'. À la vue du processus 0 (affichage), rien n'a changé. Pour la simulation, la stratégie adoptée a été couper le nombre total d' individus dans 'contexte.taux_population' et chaque thread aura son 'sub_taux_population' et fera les calculs de ces individus.
 
 Cependant, la grille utilisée doit être la même pour les threads (sinon il n'aura pas d'interaction entre les threads). Alors, avant de calculer les contaminations (boucle ligne 234), on sauvegarde les statistiques dans un vecteur (comme mentionné avant), on appelle la fonction MPI_Allreduce pour que tous les threads ajoutent ces statistiques dans ce vecteur et ensuite actualise la grille. De cette manière, la grille est la même pour les threads et après chaque thread calcule la contamination de son subpopulation.
 
-Obs.: comme dans la section 2.4, les résultats ne sont pas les mêmes de la simulation initiale.
+Obs: comme dans la section 2.4, les résultats ne sont pas les mêmes de la simulation initiale.
+
 
 **Tableau avec affichage**
  Threads MPI pour simulation| Temps              | Accélération
@@ -107,4 +108,4 @@ Obs.: comme dans la section 2.4, les résultats ne sont pas les mêmes de la sim
 2                           |        4.47        |        7.30     
 3                           |        4.62        |        7.07  
 
-Si on compare les temps dees section 2.4 et 2.5, la parallélisation avec OpenMP était plus rapide qu avec MPI.
+Si on compare les temps des section 2.4 et 2.5, la parallélisation avec OpenMP était plus rapide qu' avec MPI.
