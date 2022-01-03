@@ -71,6 +71,8 @@ OBS.: nombre de threads OMP a été configuré utilisant "export OMP_NUM_THREADS
 3                |        3.45        |9.87                |        9.46      |3.31
 4                |        3.20        |9.92                |       10.20      |3.29
 
+Nous regardons un effet contraire aux simulation avec et sans 'ordered' quant le nombre de thread OMP augmente. Si on ne considère pas les résultats différents, ce code obtient une accélération significative de 10, qui montre qu' au minimum, presque 90% du code est parallélisable (loi d'Amdahl).
+
 **Tableau sans affichage**
  OMP_NUM_THREADS | Temps sans ordered | Temps avec ordered | Acc sans ordered | Acc avec ordered
 -----------------|--------------------|--------------------|------------------|------------------
@@ -79,7 +81,7 @@ OBS.: nombre de threads OMP a été configuré utilisant "export OMP_NUM_THREADS
 3                |        3.26        |8.02                |       10.01      |4.07
 4                |        2.75        |8.28                |       11.87      |3.94
 
-Nous regardons un effet contraire aux simulation avec et sans 'ordered' quant le nombre de thread OMP augmente. Si on ne considère pas les résultats différents, ce code obtient une accélération significative de 10, qui montre qu' au minimum, presque 90% du code est parallélisable (loi d'Amdahl).
+Désormais on peut voir que les temps sans affichage finalement ont réduit, car il y a plus d'un coeur pour calculer la simulation.
 
 ## 2.5 Parallélisation MPI de la simulation - [.cpp](https://github.com/MarceloBragaeSilva/TDs-IN203/blob/main/Projet/sources/simulation_async_mpi.cpp)
 Dans cette partie, les threads s'occupant de la simulation ont sont propre MPI_Comm pour échanger des donnés, le 'sub_comm'. À vue du processus 0 (affichage), rien est changé. Pour la simulation, la stratégie adopté a été couper le nombre total de individus dans 'contexte.taux_population' et chaque thread aura son 'sub_taux_population' et fera les calcules de ces individus.
@@ -102,4 +104,4 @@ Obs.: comme dans la section 2.4, les résultats ne sont pas les mêmes de la sim
 2                           |        4.47        |        7.30     
 3                           |        4.62        |        7.07  
 
-
+Si on compare les temps dees section 2.4 et 2.5, la parallélisation avec OpenMP était plus rapide qu avec MPI.
