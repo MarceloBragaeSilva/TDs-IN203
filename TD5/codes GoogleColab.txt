@@ -1,0 +1,160 @@
+add_vector:
+import numpy
+numpy.random.seed(1729)
+size_block = 256
+size = 25600
+a = numpy.random.randn(size)          # Sous forme de vecteur 
+a = a.astype(numpy.float32)
+b = numpy.random.randn(size)          # Sous forme de vecteur 
+b = b.astype(numpy.float32)
+c = numpy.random.randn(size)          # Sous forme de vecteur 
+c = c.astype(numpy.float32)
+print(a.nbytes)
+
+a_gpu = cuda.mem_alloc(a.nbytes)
+cuda.memcpy_htod(a_gpu, a)
+b_gpu = cuda.mem_alloc(b.nbytes)
+cuda.memcpy_htod(b_gpu, b)
+c_gpu = cuda.mem_alloc(c.nbytes)
+cuda.memcpy_htod(c_gpu, c)
+
+mod = SourceModule("""
+__global__ void add_vector( int dim_block, int dim, float *a, float *b, float *c)
+{
+  if ((threadIdx.x < dim_block)&& (blockIdx.x < dim) )
+  {
+    int idx = threadIdx.x + blockIdx.x * blockDim.x;;
+    c[idx] = a[idx] + b[idx];
+  }
+}
+""")
+func = mod.get_function("add_vector")
+dim = numpy.int32(size)
+dim_block = numpy.int32(size_block)
+func(dim_block, dim, a_gpu, b_gpu, c_gpu, block=(size_block,1,1), grid=(int(dim/size_block),1,1))
+c_calc = numpy.empty_like(c)
+cuda.memcpy_dtoh(c_calc, c_gpu)
+print(f"a : {a}")
+print(f"b : {b}")
+print(f"c_gpu : {c_calc}")
+
+
+
+
+
+
+
+
+
+
+add_matrix:
+import numpy
+numpy.random.seed(1729)
+
+size_block = 8
+size = 16
+a = numpy.random.randn(size, size)          # Sous forme de matrice
+a = a.astype(numpy.float32)
+b = numpy.random.randn(size, size)          # Sous forme de matrice 
+b = b.astype(numpy.float32)
+c = numpy.random.randn(size, size)          # Sous forme de matrice 
+c = c.astype(numpy.float32)
+print(a.nbytes)
+
+a_gpu = cuda.mem_alloc(a.nbytes)
+cuda.memcpy_htod(a_gpu, a)
+b_gpu = cuda.mem_alloc(b.nbytes)
+cuda.memcpy_htod(b_gpu, b)
+c_gpu = cuda.mem_alloc(c.nbytes)
+cuda.memcpy_htod(c_gpu, c)
+
+mod = SourceModule("""
+__global__ void add_matrix( int dim_block, int dim, float *a, float *b, float *c)
+{
+  if ((threadIdx.x < dim) && (threadIdx.y < dim))
+  {
+    int idx = threadIdx.x + blockIdx.x * blockDim.x + (threadIdx.y + blockIdx.y * blockDim.y) * dim;
+    c[idx] = a[idx] + b[idx];
+  }
+}
+""")
+func = mod.get_function("add_matrix")
+dim = numpy.int32(size)
+dim_block = numpy.int32(size_block)
+func(dim_block, dim, a_gpu, b_gpu, c_gpu, block=(size_block,size_block,1), grid=(int(dim/size_block),int(dim/size_block),1))
+c_calc = numpy.empty_like(c)
+cuda.memcpy_dtoh(c_calc, c_gpu)
+print(f"a : {a}")
+print(f"b : {b}")
+print(f"c_gpu : {c_calc}")
+
+
+
+
+mandelbrot:
+import pylab as plt
+import numpy as np
+# initial values 
+loop = 100 # number of interations
+div = 1000 # divisions
+# all possible values of c
+c = np.linspace(-2,2,div)[:,np.newaxis] + 1j*np.linspace(-1.5,1.5,div)[np.newaxis,:]
+c_gpu = cuda.mem_alloc(c.nbytes)
+cuda.memcpy_htod(c_gpu, c)
+
+
+# array of ones of same dimensions as c
+ones = np.ones(np.shape(c), np.int)
+# Array that will hold colors for plot, initial value set here will be
+# the color of the points in the mandelbrot set, i.e. where the series
+# converges.
+# For the code below to work, this initial value must at least be 'loop'.
+# Here it is loop + 5
+color = ones * loop + 5
+z = 0
+#for n in range(0,loop):
+ #     z = z**2 + c
+ #     diverged = np.abs(z)>2
+ #     # Store value of n at which series was detected to diverge.
+ #     # The later the series is detected to diverge, the higher
+ #     # the 'color' value.
+ #     color[diverged] = np.minimum(color[diverged], ones[diverged]*n)
+mod = SourceModule("""
+__global__ void calc_mandelbrot( int div, int loop, float *c)
+{
+  if ((threadIdx.x < div) && (threadIdx.y < div))
+  {
+    int idx = threadIdx.x + threadIdx.y * dim;
+    float z = 0;
+    int diverged = 0;
+    for (int i = 0; i<loop; i++){
+        z = z*z + c[idx];
+        if(abs(z)>2)
+          diverged = 1;
+    }
+  }
+}
+""")
+func = mod.get_function("calc_mandelbrot")
+dim = numpy.int32(size)
+func(div, loop, c_gpu, block=(div,div,1))
+c_calc = numpy.empty_like(c)
+cuda.memcpy_dtoh(c_calc, c_gpu)
+
+
+
+plt.rcParams['figure.figsize'] = [12, 7.5]
+# contour plot with real and imaginary parts of c as axes
+# and colored according to 'color'
+plt.contourf(c_calc.real, c_calc.imag, color)
+
+plt.xlabel("Real($c$)")
+plt.ylabel("Imag($c$)")
+plt.xlim(-2,2)
+plt.ylim(-1.5,1.5)
+plt.savefig("plot.png")
+plt.show()
+
+
+
+
